@@ -1,0 +1,508 @@
+/*
+ * Opensense theme for Tailwind 4 + shadcn-svelte.
+ *
+ * Colours, type scale, radii and shadows follow the Opensense app (ui.opensense.com), which uses
+ * a 14px root font size. Here the root stays at the browser default and the body is 14px, so
+ * Tailwind's rem-based spacing scale behaves normally (p-4 = 16px); theme sizes are converted to
+ * render at the same pixel values.
+ *
+ * Import after `tailwindcss`:
+ *   @import "tailwindcss";
+ *   @import "tw-animate-css";
+ *   @import "./lib/theme/opensense.css";
+ */
+
+@import "@fontsource-variable/rubik";
+
+/* dark: applies under .dark unless a nearer .light region opts back out.
+   Zero specificity, same as Tailwind's built-in variant. */
+@custom-variant dark (&:where(.dark, .dark *):not(:where(.light, .light *)));
+
+/* ------------------------------------------------------------------------------------------------
+ * Palette — the Opensense design tokens. Tailwind's default palette is removed so only these
+ * exist (bg-gray-100, text-blue-400, border-red-300 …). Names match the app's --color-* vars.
+ * --------------------------------------------------------------------------------------------- */
+@theme {
+	--color-*: initial;
+
+	--color-white: #fff;
+	--color-black: #000;
+	--color-transparent: transparent;
+	--color-current: currentColor;
+
+	--color-text: #21333d;
+	--color-carbon: #21333d;
+	--color-mint: #1fd1b6;
+	--color-navy: #006cb7;
+	--color-indigo: #1f3d4e;
+	--color-capri: #1bbbff;
+	--color-opal: #ec6454;
+	--color-sandy: #f3a86d;
+	--color-teal: #5ec1b2;
+
+	--color-gray-0: #fafafa;
+	--color-gray-100: #f5f5f5;
+	--color-gray-200: #eceff1;
+	--color-gray-300: #e8e9ea;
+	--color-gray-400: #d1d3d6;
+	--color-gray-500: #b9bdc1;
+	--color-gray-600: #8b9198;
+	--color-gray-700: #5d656f;
+	--color-gray-800: #454f5a;
+	--color-gray-900: #232a32;
+	--color-gray-1000: #172331;
+
+	--color-green-0: #acf9d8;
+	--color-green-100: #81f5c4;
+	--color-green-200: #65e6b0;
+	--color-green-300: #4ad69b;
+	--color-green-400: #35cd8d;
+	--color-green-500: #1fb777;
+
+	--color-yellow-100: #fff8ed;
+	--color-yellow-200: #ffe9bf;
+	--color-yellow-300: #ffd37f;
+	--color-yellow-400: #ffbc3d;
+
+	--color-blue-0: #e7f7fc;
+	--color-blue-100: #99cfff;
+	--color-blue-200: #80c3ff;
+	--color-blue-300: #4dabff;
+	--color-blue-400: #0087ff;
+	--color-blue-500: #0066eb;
+
+	--color-orange-0: #fef6e3;
+	--color-orange-100: #ffeba1;
+	--color-orange-200: #f1d674;
+	--color-orange-300: #e7ca65;
+	--color-orange-400: #d6b74a;
+	--color-orange-500: #d8ac10;
+
+	--color-red-0: #ffe7e3;
+	--color-red-100: #ffc0b7;
+	--color-red-200: #ff9a8c;
+	--color-red-300: #ff6666;
+	--color-red-400: #ff3c3c;
+	--color-red-500: #d52b1e;
+
+	/* Tailwind's violet (not in the Opensense palette), kept for info. */
+	--color-violet-50: oklch(96.9% 0.016 293.756);
+	--color-violet-100: oklch(94.3% 0.029 294.588);
+	--color-violet-200: oklch(89.4% 0.057 293.283);
+	--color-violet-300: oklch(81.1% 0.111 293.571);
+	--color-violet-400: oklch(70.2% 0.183 293.541);
+	--color-violet-500: oklch(60.6% 0.25 292.717);
+	--color-violet-600: oklch(54.1% 0.281 293.009);
+	--color-violet-700: oklch(49.1% 0.27 292.581);
+	--color-violet-800: oklch(43.2% 0.232 292.759);
+	--color-violet-900: oklch(38% 0.189 293.745);
+	--color-violet-950: oklch(28.3% 0.141 291.089);
+
+	/* Typography */
+	--font-sans: "Rubik Variable", "Rubik", ui-sans-serif, system-ui, sans-serif;
+	--font-serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+	--font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Courier New", monospace;
+
+	/* Opensense type scale (--font-size-*), as rendered at the app's 14px base. */
+	--text-2xs: 0.546875rem; /* xsmall   8.75px */
+	--text-2xs--line-height: 1.25;
+	--text-xs: 0.65625rem; /* small    10.5px */
+	--text-xs--line-height: 1.25;
+	--text-sm: 0.875rem; /* base     14px — body text */
+	--text-sm--line-height: 1.25;
+	--text-md: 0.77875rem; /* medium   12.46px — <small>, badges, tooltips */
+	--text-md--line-height: 1.2;
+	--text-base: 0.984375rem; /* large    15.75px — h4 */
+	--text-base--line-height: 1.2;
+	--text-lg: 1.09375rem; /* xlarge   17.5px — h3 */
+	--text-lg--line-height: 1.2;
+	--text-xl: 1.203125rem; /* xxlarge  19.25px — h2 */
+	--text-xl--line-height: 1.2;
+	--text-2xl: 1.3125rem; /* xxxlarge 21px — h1, dialog title */
+	--text-2xl--line-height: 1.2;
+	--text-3xl: 1.53125rem; /* jumbo    24.5px — page title */
+	--text-3xl--line-height: 1.2;
+
+	--leading-tight: 1.2;
+	--leading-snug: 1.25;
+	--leading-normal: 1.5;
+
+	/* --border-radius-* (small, base, large, xlarge, xxlarge), plus 5.25px for buttons. */
+	--radius-xs: 2px;
+	--radius-sm: 3.5px; /* inputs, badges */
+	--radius-md: 5.25px; /* buttons, alerts */
+	--radius-lg: 7px; /* cards, menus, dialogs, popovers */
+	--radius-xl: 10.5px;
+	--radius-2xl: 14px;
+	--radius-3xl: 16px;
+	--radius-4xl: 999px;
+
+	/* --box-shadow-* (small, base, large) plus two deeper shadows; shadow-panel is below. */
+	--shadow-xs: 0 1px 1px rgb(0 0 0 / 0.1);
+	--shadow-sm: 0 1px 3px rgb(0 0 0 / 0.1);
+	--shadow-md: 0 1px 5px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 0.5rem 1rem rgb(0 0 0 / 0.15);
+	--shadow-xl: 0 1rem 3rem rgb(0 0 0 / 0.175);
+}
+
+/* Opensense brand colours, under their names in the app's :root. Same in both modes.
+   Also available as bg-brand-success, text-brand-capri, etc. */
+:root {
+	--brand-primary: var(--color-blue-400);
+	--brand-success: var(--color-green-400);
+	--brand-info: var(--color-yellow-400);
+	--brand-warning: var(--color-orange-400);
+	--brand-danger: var(--color-red-400);
+	--brand-capri: #1bbbff;
+	--brand-carbon: #21333d;
+	--brand-opal: #ec6454;
+	--brand-sandy: #f3a86d;
+	--brand-green: #5ec1b2;
+	--color-actions: var(--color-red-500);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Semantic tokens — shadcn's variables plus status colours (success, info, warning).
+ * Each status has: base, -foreground (text on base), -subtle (tinted background),
+ * -border (tinted border), -emphasis (the hue as text: titles, icons, status text).
+ *
+ * Tints mix the Opensense hues into the page background, so one rule serves light and dark
+ * (and .light regions); body text on a tint is neutral (--tinted-foreground). Status colour
+ * used as TEXT should use -emphasis, which meets contrast in both modes.
+ * --------------------------------------------------------------------------------------------- */
+/* :root is light; .light re-asserts the light tokens on a region inside .dark. */
+:root,
+.light {
+	color-scheme: light;
+
+	--background: #fff;
+	--foreground: #21333d;
+	--card: #fff;
+	--card-foreground: #21333d;
+	--popover: #fff;
+	--popover-foreground: #21333d;
+
+	/* Tint hues and the mix recipe; dark mode only changes the percentages. */
+	--hue-primary: #0087ff; /* blue-400 */
+	--hue-secondary: #5d656f; /* gray-700 */
+	--hue-success: var(--brand-success);
+	--hue-info: var(--color-violet-400);
+	--hue-warning: #ffbc3d; /* yellow-400 */
+	--hue-destructive: #ff3c3c; /* red-400, --brand-danger */
+	--tint-bg: 14%;
+	--tint-border: 45%;
+	--tinted-foreground: #454f5a; /* gray-800, as --filter-container-color */
+
+	/* Brand primary = --color-blue-400. */
+	--primary: #0087ff;
+	--primary-foreground: #fff;
+	--primary-hover: #017eed;
+	--primary-active: #0360b4;
+	--primary-subtle: color-mix(in srgb, var(--hue-primary) var(--tint-bg), var(--background));
+	--primary-border: color-mix(in srgb, var(--hue-primary) var(--tint-border), var(--background));
+	--primary-emphasis: #0058a6;
+
+	/* shadcn "secondary" = soft neutral surface. */
+	--secondary: #f5f5f5;
+	--secondary-foreground: #454f5a;
+	--secondary-subtle: color-mix(in srgb, var(--hue-secondary) var(--tint-bg), var(--background));
+	--secondary-border: color-mix(in srgb, var(--hue-secondary) var(--tint-border), var(--background));
+	--secondary-emphasis: #3c4248;
+
+	--muted: #f5f5f5;
+	--muted-foreground: #5d656f;
+	--accent: #f5f5f5;
+	--accent-foreground: #232a32;
+
+	--success: var(--brand-success);
+	--success-foreground: #21333d; /* white on mint fails contrast */
+	--success-subtle: color-mix(in srgb, var(--hue-success) var(--tint-bg), var(--background));
+	--success-border: color-mix(in srgb, var(--hue-success) var(--tint-border), var(--background));
+	--success-emphasis: #1d714e;
+
+	--info: var(--color-violet-400);
+	--info-foreground: #21333d; /* like success: white on the lighter fill fails contrast */
+	--info-subtle: color-mix(in srgb, var(--hue-info) var(--tint-bg), var(--background));
+	--info-border: color-mix(in srgb, var(--hue-info) var(--tint-border), var(--background));
+	--info-emphasis: color-mix(in srgb, var(--hue-info), black 30%);
+
+	--warning: #ffc107;
+	--warning-foreground: #000;
+	--warning-subtle: color-mix(in srgb, var(--hue-warning) var(--tint-bg), var(--background));
+	--warning-border: color-mix(in srgb, var(--hue-warning) var(--tint-border), var(--background));
+	--warning-emphasis: #805e1e;
+
+	--destructive: #dc3545;
+	--destructive-foreground: #fff;
+	--destructive-subtle: color-mix(in srgb, var(--hue-destructive) var(--tint-bg), var(--background));
+	--destructive-border: color-mix(in srgb, var(--hue-destructive) var(--tint-border), var(--background));
+	--destructive-emphasis: #a62727;
+
+	--border: #e8e9ea;
+	--input: #e8e9ea;
+	--ring: #0087ff;
+
+	/* Controls — outline buttons, toggles, inputs. */
+	--control: #fff;
+	--control-pressed: #eceff1; /* active / pressed / toggled on */
+	--control-border: #d1d3d6;
+	--control-border-hover: #8b9198;
+	--control-foreground: #5d656f;
+	--control-foreground-hover: #454f5a;
+	--subtle: #fafafa; /* table header band, outline-button hover */
+	--subtle-foreground: #8b9198; /* placeholders, close icons */
+	--faint: #b9bdc1; /* disabled text, check & radio borders */
+	--disabled-foreground: #d1d3d6; /* disabled input text */
+
+	--link: #0848a7;
+	--link-hover: #043f96;
+	--tooltip: #232a32;
+	--tooltip-foreground: #fff;
+	--popover-border: rgb(0 0 0 / 0.15);
+	--highlight: #ff0;
+	--highlight-foreground: currentColor;
+	--table-border: #eceff1;
+
+	/* Elevation. Dark mode adds a hairline, since a glow barely shows on navy. */
+	--panel-shadow: 0 0 20px rgb(0 0 0 / 0.1);
+
+	--chart-1: #0087ff;
+	--chart-2: #35cd8d;
+	--chart-3: #ffbc3d;
+	--chart-4: #ff3c3c;
+	--chart-5: #1bbbff;
+
+	--sidebar: #172331;
+	--sidebar-foreground: #fff;
+	--sidebar-primary: #0087ff;
+	--sidebar-primary-foreground: #fff;
+	--sidebar-accent: #24364b;
+	--sidebar-accent-foreground: #fff;
+	--sidebar-border: #24364b;
+	--sidebar-ring: #0087ff;
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Dark mode — <html class="dark">. Surfaces come from the Opensense app sidebar (#172331
+ * background, #1a2b3d user panel, #233548 trigger, #24364b dividers, #314558 badge, #505d71
+ * section headings). Brand and status colours keep their values; tints re-mix against the navy
+ * (20% / 50%) and -emphasis lightens the hue toward white.
+ * --------------------------------------------------------------------------------------------- */
+.dark {
+	color-scheme: dark;
+
+	--background: #172331;
+	--foreground: #eceff1;
+	--card: #1a2b3d;
+	--card-foreground: #eceff1;
+	--popover: #1a2b3d;
+	--popover-foreground: #eceff1;
+
+	--primary-hover: #1a94ff;
+	--primary-active: #0360b4;
+
+	--secondary: #233548;
+	--secondary-foreground: #eceff1;
+	--muted: #233548;
+	--muted-foreground: #9aa3ad;
+	--accent: #24364b;
+	--accent-foreground: #fff;
+
+	--destructive: #e5484d;
+
+	--border: #24364b;
+	--input: #314558;
+	--ring: #0087ff;
+
+	--control: #1a2b3d;
+	--control-pressed: #2c4259;
+	--control-border: #314558;
+	--control-border-hover: #505d71;
+	--control-foreground: #d1d3d6;
+	--control-foreground-hover: #fff;
+	--subtle: #1d3044;
+	--subtle-foreground: #7d8a98;
+	--faint: #505d71;
+	--disabled-foreground: #4f6074;
+
+	--link: #4dabff;
+	--link-hover: #80c3ff;
+	--tooltip: #eceff1;
+	--tooltip-foreground: #172331;
+	--popover-border: #2c4259;
+	--highlight: #664d03;
+	--highlight-foreground: #fff8ed;
+	--table-border: #24364b;
+
+	--panel-shadow: 0 0 0 1px #2c4259, 0 8px 30px rgb(0 0 0 / 0.45);
+
+	--tint-bg: 20%;
+	--tint-border: 50%;
+	--tinted-foreground: #eceff1;
+	--primary-emphasis: #4cabff;
+	--secondary-emphasis: #a6aab0;
+	--success-emphasis: #72dcaf;
+	--info-emphasis: color-mix(in srgb, var(--hue-info), white 40%);
+	--warning-emphasis: #ffd077;
+	--destructive-emphasis: #ff7676;
+
+	--sidebar: #131d29;
+	--sidebar-accent: #24364b;
+	--sidebar-border: #24364b;
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary-hover: var(--primary-hover);
+	--color-primary-active: var(--primary-active);
+	--color-primary-subtle: var(--primary-subtle);
+	--color-primary-border: var(--primary-border);
+	--color-primary-emphasis: var(--primary-emphasis);
+
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary-subtle: var(--secondary-subtle);
+	--color-secondary-border: var(--secondary-border);
+	--color-secondary-emphasis: var(--secondary-emphasis);
+
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-success-subtle: var(--success-subtle);
+	--color-success-border: var(--success-border);
+	--color-success-emphasis: var(--success-emphasis);
+
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-info-subtle: var(--info-subtle);
+	--color-info-border: var(--info-border);
+	--color-info-emphasis: var(--info-emphasis);
+
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-warning-subtle: var(--warning-subtle);
+	--color-warning-border: var(--warning-border);
+	--color-warning-emphasis: var(--warning-emphasis);
+
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-destructive-subtle: var(--destructive-subtle);
+	--color-destructive-border: var(--destructive-border);
+	--color-destructive-emphasis: var(--destructive-emphasis);
+
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	--color-control: var(--control);
+	--color-control-pressed: var(--control-pressed);
+	--color-control-border: var(--control-border);
+	--color-control-border-hover: var(--control-border-hover);
+	--color-control-foreground: var(--control-foreground);
+	--color-control-foreground-hover: var(--control-foreground-hover);
+	--color-subtle: var(--subtle);
+	--color-subtle-foreground: var(--subtle-foreground);
+	--color-tinted-foreground: var(--tinted-foreground);
+	--color-faint: var(--faint);
+	--color-disabled-foreground: var(--disabled-foreground);
+	--color-link: var(--link);
+	--color-link-hover: var(--link-hover);
+	--color-tooltip: var(--tooltip);
+	--color-tooltip-foreground: var(--tooltip-foreground);
+	--color-popover-border: var(--popover-border);
+	--color-highlight: var(--highlight);
+	--color-table-border: var(--table-border);
+
+	--color-brand-primary: var(--brand-primary);
+	--color-brand-success: var(--brand-success);
+	--color-brand-info: var(--brand-info);
+	--color-brand-warning: var(--brand-warning);
+	--color-brand-danger: var(--brand-danger);
+	--color-brand-capri: var(--brand-capri);
+	--color-brand-carbon: var(--brand-carbon);
+	--color-brand-opal: var(--brand-opal);
+	--color-brand-sandy: var(--brand-sandy);
+	--color-brand-green: var(--brand-green);
+
+	--shadow-panel: var(--panel-shadow);
+
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Base element styles — Opensense typography and links.
+ * --------------------------------------------------------------------------------------------- */
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	html {
+		@apply font-sans;
+	}
+	body {
+		@apply bg-background text-foreground text-sm leading-snug antialiased;
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply mb-2 leading-tight font-medium;
+	}
+	h1 {
+		@apply text-2xl;
+	}
+	h2 {
+		@apply text-xl;
+	}
+	h3 {
+		@apply text-lg;
+	}
+	h4 {
+		@apply text-base;
+	}
+	h5 {
+		@apply text-sm;
+	}
+	h6 {
+		@apply text-md;
+	}
+	small {
+		@apply text-md font-normal;
+	}
+	a:not([data-slot]) {
+		@apply text-link no-underline hover:text-link-hover;
+	}
+	mark {
+		@apply bg-highlight px-[0.1875em] text-(--highlight-foreground);
+	}
+	hr {
+		@apply my-4 h-px border-0 bg-border;
+	}
+}
